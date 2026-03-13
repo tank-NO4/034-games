@@ -4,8 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
+
+
+
 public class PrincessBubbleController : MonoBehaviour
 {
+
     [Header("气泡设置")]
     public GameObject bubbleUI;          // 头顶气泡面板
     public Image circleImg;              // 圆形图标
@@ -49,20 +53,22 @@ public class PrincessBubbleController : MonoBehaviour
             Vector3 targetPos = new Vector3(transform.position.x, transform.position.y + 2f, princessCamera.transform.position.z);
             princessCamera.transform.position = Vector3.Lerp(princessCamera.transform.position, targetPos, cameraFollowSpeed * Time.deltaTime);
         }
-
-        // 检测玩家是否接触公主（用碰撞/触发，这里示例用距离检测）
-        float distToPlayer = Vector2.Distance(transform.position, _playerTransform.position);
-        if (distToPlayer < 1.5f)
-        {
-            _isPlayerInContact = true;
-            HideBubbleAndCamera();
-        }
-        else
-        {
-            _isPlayerInContact = false;
-            ShowBubbleAndCamera();
-        }
+        
+            // 检测玩家是否接触公主（用碰撞/触发，这里示例用距离检测）
+            float distToPlayer = Vector2.Distance(transform.position, _playerTransform.position);
+            if (distToPlayer < 1.5f)
+            {
+                _isPlayerInContact = true;
+                HideBubbleAndCamera();
+            }
+            else
+            {
+                _isPlayerInContact = false;
+                ShowBubbleAndCamera();
+            }
+        
     }
+    
 
     // 随机激活一个形状
     IEnumerator RandomShapeBlink()
