@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class LinkShapeShrink : MonoBehaviour
 {
     [Header("绳索设置")]
@@ -25,9 +24,7 @@ public class LinkShapeShrink : MonoBehaviour
     public float sizeReductionPerSecond = 0.1f;
     public float shrinkAnimationSpeed = 2f;
 
-    [Header("标签")]
-    public string groundTag = "Ground";
-    public string wallTag = "Wall";
+   
 
     private Rigidbody2D _rb;
     private GameObject _linkedTarget;
@@ -95,15 +92,24 @@ public class LinkShapeShrink : MonoBehaviour
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D ray = Physics2D.Raycast(mousePos, Vector2.zero);
-        if (ray && ray.collider.CompareTag("Linkable"))
+
+        // 只要点到物体 + 有 LinkableTarget，就强制连线
+        if (ray && ray.collider != null)
         {
-            _linkedTarget = ray.collider.gameObject;
-            _line.enabled = true;
-            _shapeChangeBaseSize = _targetPlayerSize; // 每次链接都以当前大小为新基准
-            _isShapeChanged = false; // 允许本次重新变形
+            if (ray.collider.TryGetComponent<LinkableTarget>(out _))
+            {
+                Debug.Log(" 链接成功：" + ray.collider.gameObject.name);
+
+                _linkedTarget = ray.collider.gameObject;
+                _line.enabled = true;      // 强制开线
+                _line.positionCount = 2;   // 强制两点
+                _shapeChangeBaseSize = _targetPlayerSize;
+                _isShapeChanged = false;
+            }
         }
     }
-    
+
+
 
 
     void ApplyLinkForce()
@@ -135,12 +141,8 @@ public class LinkShapeShrink : MonoBehaviour
     void UpdateLinkDurationAndShrink()
     {
         if (_linkedTarget == null) return;
-        if (_linkedTarget.CompareTag(groundTag) || _linkedTarget.CompareTag(wallTag))
-        {
-            _currentLinkDuration = 0f;
-            return;
-        }
-
+       
+       
         _currentLinkDuration += Time.fixedDeltaTime;
 
         // 超过阈值开始缩小
@@ -182,6 +184,6 @@ public class LinkShapeShrink : MonoBehaviour
         _currentLinkDuration = 0f;
         _isShapeChanged = false;
 
-       
+
     }
 }
